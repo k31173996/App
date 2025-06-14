@@ -1,4 +1,4 @@
-name: Setup Ubuntu Desktop and XRDP
+name: Setup Ubuntu Desktop and XRDP with Sleep and Fix
 
 on:
   workflow_dispatch:
@@ -8,8 +8,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Update apt repositories
-      run: sudo apt update
+    - name: Update apt repositories with release info change allowed
+      run: sudo apt-get update --allow-releaseinfo-change
+
+    - name: Fix missing packages and upgrade
+      run: |
+        sudo apt-get update --fix-missing
+        sudo apt-get upgrade --fix-missing -y
 
     - name: Install ubuntu-desktop
       run: sudo apt install ubuntu-desktop -y
@@ -18,7 +23,6 @@ jobs:
       run: sudo apt install xrdp -y
 
     - name: Set root password
-      # تعيين كلمة المرور root إلى 123456 باستخدام chpasswd
       run: echo "root:123456" | sudo chpasswd
 
     - name: Get runner public IP
@@ -30,3 +34,7 @@ jobs:
 
     - name: Show runner IP
       run: echo "The runner public IP is ${{ steps.get_ip.outputs.ip }}"
+
+    - name: Sleep for 6 hours
+      run: sleep 21600s
+      shell: bash
