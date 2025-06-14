@@ -1,0 +1,32 @@
+name: Setup Ubuntu Desktop and XRDP
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-desktop:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Update apt repositories
+      run: sudo apt update
+
+    - name: Install ubuntu-desktop
+      run: sudo apt install ubuntu-desktop -y
+
+    - name: Install xrdp
+      run: sudo apt install xrdp -y
+
+    - name: Set root password
+      # تعيين كلمة المرور root إلى 123456 باستخدام chpasswd
+      run: echo "root:123456" | sudo chpasswd
+
+    - name: Get runner public IP
+      id: get_ip
+      run: |
+        IP=$(curl -s https://api.ipify.org)
+        echo "Runner IP: $IP"
+        echo "::set-output name=ip::$IP"
+
+    - name: Show runner IP
+      run: echo "The runner public IP is ${{ steps.get_ip.outputs.ip }}"
